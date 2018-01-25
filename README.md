@@ -19,3 +19,6 @@ A linux based DEScrypt CPU cracker that uses a password list to crack hashes
 ###### To Compile: g++ -std=c++11 main.cpp -pthread -pcrypt -o DEScrypt
 
 ## Screenshots
+![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/Start1.png)
+![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/start2.png)
+![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/end1.png)
