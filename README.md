@@ -1,6 +1,6 @@
 # DEScrypt-CPU-Collision-Cracker
 ## What is DEScrypt-CPU-Collision-Cracker?
-A linux based DEScrypt CPU cracker that uses a password list to crack hashes
+A linux based DEScrypt CPU cracker that deduces the salt and uses a password list to crack the hashes
 ## Features
 + Ability to crack hashes both from a file and individual 
 + Detects CPU cores
