@@ -12,7 +12,7 @@ extern "C"
 
 using namespace std;
 
-struct config_s{ string word_list, output_file, hash; int max_threads = 10; bool is_list; };
+struct config_s{ string word_list, output_file, hash; int max_threads = 10; bool is_list = false, is_output = false; };
 unique_ptr<config_s> config (new config_s);
 atomic<int> active(0); // active number of threads
 atomic<long int> attempted(0); // number of hashes tried
@@ -63,7 +63,7 @@ public:
          ++attempted;
          if(try_crypt(hash, word))
          {
-           if(config->is_list)
+           if(config->is_output)
            {
              file_write(hash + ":" + word + "\n");
            }
@@ -158,6 +158,7 @@ int main(int argc, char **argv)
         }
         else if(identifier == "-o=")
         {
+          config->is_output = true;
           config->output_file = string(argv[i]).substr(3, string(argv[i]).size());
         }
         else if(identifier == "-i=")
