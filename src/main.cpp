@@ -12,7 +12,8 @@ extern "C"
 
 using namespace std;
 
-struct { string word_list, output_file; int max_threads = 10; } config;
+struct config_s{ string word_list, output_file, hash; int max_threads = 10; bool is_list; };
+unique_ptr<config_s> config (new config_s);
 atomic<int> active(0); // active number of threads
 atomic<long int> attempted(0); // number of hashes tried
 
@@ -28,13 +29,13 @@ public:
 class controller : public attempt
 {
 public:
-  void file_write(string data, string file)
+  void file_write(string data)
   {
     while(1)
     {
       if(hash_write.try_lock())
       {
-        ofstream hash_output(file, ios::app);
+        ofstream hash_output(config->output_file, ios::app);
         if(hash_output.is_open())
         {
           hash_output << data;
@@ -44,16 +45,16 @@ public:
         }
         else
         {
-          cout << "\e[31m[" << time(0) << "] [-] Error Opening: '" << file << "' For writing\e[39m" << endl;
+          cout << "\e[31m[" << time(0) << "] [-] Error Opening: '" << config->output_file << "' For writing\e[39m" << endl;
           exit(1);      
         }
       }
       this_thread::sleep_for(chrono::milliseconds(10));
     }
   }
-  void crack_init(atomic<long int> &attempted, string hash, string wordlist, string ofile)
+  void crack_init(atomic<long int> &attempted, string hash)
   {
-    ifstream word_list_read(wordlist);
+    ifstream word_list_read(config->word_list);
     string word;
     if(word_list_read.is_open())
     {
@@ -62,9 +63,9 @@ public:
          ++attempted;
          if(try_crypt(hash, word))
          {
-           if(!ofile.empty())
+           if(config->is_list)
            {
-             file_write(hash + ":" + word + "\n", ofile);
+             file_write(hash + ":" + word + "\n");
            }
            cout << "\e[32m[" << time(0) << "] [+] Cracked: '" << hash << "' Real Password: '" << word << "'\e[39m" << endl;
            return;
@@ -73,29 +74,29 @@ public:
     }
     else
     {
-      cout << "\e[31m[" << time(0) << "] [-] Error Opening: '" << wordlist << "' For Reading\e[39m" << endl;
+      cout << "\e[31m[" << time(0) << "] [-] Error Opening: '" << config->word_list << "' For Reading\e[39m" << endl;
       exit(1);
     }
   }
-  void thread_create(atomic<int> &counter, atomic<long int> &attempted, string hash, string word_list, string ofile)
+  void thread_create(atomic<int> &counter, atomic<long int> &attempted, string hash)
   {
     ++counter;
-    crack_init(ref(attempted), hash, word_list, ofile);
+    crack_init(ref(attempted), hash);
     --counter;
   }
-  void file_read(string file)
+  void file_read()
   {
-    ifstream read_hashes(file);
+    ifstream read_hashes(config->hash);
     string hash;
     if(read_hashes.is_open())
     {
       while(getline(read_hashes, hash))
       {
-        while(active >= config.max_threads)
+        while(active >= config->max_threads)
         {
           this_thread::sleep_for(chrono::milliseconds(20));
         } //attempted
-        thread(&controller::thread_create, this, ref(active), ref(attempted), hash, config.word_list, config.output_file).detach();
+        thread(&controller::thread_create, this, ref(active), ref(attempted), hash).detach();
         this_thread::sleep_for(chrono::milliseconds(5));
       }
       while (active != 0)
@@ -105,19 +106,19 @@ public:
     }
     else
     {
-      cout << "\e[31m[" << time(0) << "] [-] Error Opening: '" << file << "' For Reading\e[39m" << endl;
+      cout << "\e[31m[" << time(0) << "] [-] Error Opening: '" << config->hash << "' For Reading\e[39m" << endl;
       exit(1);
     }
   } 
-  controller(string list_or_hash, bool is_list)
+  controller()
   {
-    if(is_list)
+    if(config->is_list)
     {
-      file_read(list_or_hash);
+      file_read();
     }
     else
     {
-      crack_init(ref(attempted), list_or_hash, config.word_list, config.output_file);
+      crack_init(ref(attempted), config->hash);
     }
     cout << "\e[33m[" << time(0) << "] [!] [INFO] Total Number of Hashes Tried: '" <<  attempted << "'\e[39m" << endl;
   }
@@ -137,7 +138,6 @@ int main(int argc, char **argv)
   if(argc >= 3)
   {
     string hashes, identifier;
-    bool is_list = false;
     for(int i = 1; i < argc;i++)
     {
       if(sizeof(argv[i]) > 3)
@@ -145,30 +145,30 @@ int main(int argc, char **argv)
         identifier = string(argv[i]).substr(0, 3);
         if(identifier == "-l=")
         {
-          is_list = true;
-          hashes = string(argv[i]).substr(3, string(argv[i]).size());
+          config->is_list = true;
+          config->hash = string(argv[i]).substr(3, string(argv[i]).size());
         }
         else if(identifier == "-w=")
         {
-          config.word_list = string(argv[i]).substr(3, string(argv[i]).size());
+          config->word_list = string(argv[i]).substr(3, string(argv[i]).size());
         }
         else if(identifier == "-t=")
         {
-          config.max_threads = stoi(string(argv[i]).substr(3, string(argv[i]).size()));
+          config->max_threads = stoi(string(argv[i]).substr(3, string(argv[i]).size()));
         }
         else if(identifier == "-o=")
         {
-          config.output_file = string(argv[i]).substr(3, string(argv[i]).size());
+          config->output_file = string(argv[i]).substr(3, string(argv[i]).size());
         }
         else if(identifier == "-i=")
         {
-          hashes = string(argv[i]).substr(3, string(argv[i]).size());
+          config->hash = string(argv[i]).substr(3, string(argv[i]).size());
         }
       }
     }
-    cout << "\e[33m[" << time(0) << "] [!] [LOADED INFO] Wordlist: '" <<  config.word_list << "' Hash/Hash List: '" << hashes <<  "' Maximum Threads: '" << config.max_threads << "' Output File: '" << (!config.output_file.empty() ? config.output_file : "NONE") << "'\e[39m" << endl;
+    cout << "\e[33m[" << time(0) << "] [!] [LOADED INFO] Wordlist: '" <<  config->word_list << "' Hash/Hash List: '" << hashes <<  "' Maximum Threads: '" << config->max_threads << "' Output File: '" << (config->is_list ? config->output_file : "NONE") << "'\e[39m" << endl;
     cout << "\e[33m[" << time(0) << "] [!] [INFO] CPU Core(s) Detected: '" <<  thread::hardware_concurrency() << "'\e[39m" << endl;
-    controller(hashes, is_list);
+    controller();
   }
   else
   {
