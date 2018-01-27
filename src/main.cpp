@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         }
       }
     }
-    cout << "\e[33m[" << time(0) << "] [!] [LOADED INFO] Wordlist: '" <<  config->word_list << "' Hash/Hash List: '" << config->hash <<  "' Output File: '" << (config->is_list ? config->output_file : "NONE") << "'\e[39m" << endl;
+    cout << "\e[33m[" << time(0) << "] [!] [INFO] Wordlist: '" <<  config->word_list << "' Hash/Hash List: '" << config->hash <<  "' Output File: '" << (config->is_output ? config->output_file : "NONE") << "'\e[39m" << endl;
     cout << "\e[33m[" << time(0) << "] [!] [INFO] CPU Core(s) Detected: '" <<  thread::hardware_concurrency() << "' Current Threads '" <<config->max_threads << "'\e[39m" << endl;
     controller();
   }
