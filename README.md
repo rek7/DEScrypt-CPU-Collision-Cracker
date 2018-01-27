@@ -20,7 +20,7 @@ DEScrypt uses by default a two byte salt(comprised of characters [a-zA-Z0-9./] [
         -t=             Number of Threads(Default is 10)
 
 ## Getting started
-###### To Compile: g++ -std=c++11 src/main.cpp -pthread -pcrypt -o DEScrypt
+###### To Compile: g++ -std=c++11 src/main.cpp -pthread -lcrypt -O2 -o DEScrypt
 ## Screenshots
 ![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/Start1.png)
 ![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/start2.png)
