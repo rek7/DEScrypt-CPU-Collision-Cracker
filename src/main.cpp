@@ -15,7 +15,7 @@ int main(int argc, char **argv)
   cout << "For questions or bug fixes, either make a github commit or email, rek7@protonmail.com" << endl;
   if(argc >= 3)
   {
-    string hashes, identifier;
+    string identifier;
     for(int i = 1; i < argc;i++)
     {
       if(sizeof(argv[i]) > 3)
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         }
       }
     }
-    cout << "\e[33m[" << time(0) << "] [!] [LOADED INFO] Wordlist: '" <<  config->word_list << "' Hash/Hash List: '" << hashes <<  "' Maximum Threads: '" << config->max_threads << "' Output File: '" << (config->is_list ? config->output_file : "NONE") << "'\e[39m" << endl;
+    cout << "\e[33m[" << time(0) << "] [!] [LOADED INFO] Wordlist: '" <<  config->word_list << "' Hash/Hash List: '" << config->hash <<  "' Output File: '" << (config->is_list ? config->output_file : "NONE") << "'\e[39m" << endl;
     cout << "\e[33m[" << time(0) << "] [!] [INFO] CPU Core(s) Detected: '" <<  thread::hardware_concurrency() << "' Current Threads '" <<config->max_threads << "'\e[39m" << endl;
     controller();
   }
