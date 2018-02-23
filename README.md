@@ -9,7 +9,7 @@ DEScrypt uses by default a two byte salt(comprised of characters [a-zA-Z0-9./] [
 + Adjustable number of threads
 + Colon-separated output file
 + Clear readable display
-+ Average hash rate of 22,000/s with the default 10 threads
++ Average hash rate of 22,000/s with the default 10 threads on a single CPU core
 ## Commands 
         Command         Description
         -------         -----------
