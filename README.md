@@ -25,6 +25,7 @@ DEScrypt uses by default a two byte salt(comprised of characters [a-zA-Z0-9./] [
 ![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/Start1.png)
 ![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/start2.png)
 ![alt text](https://github.com/rek7/DEScrypt-CPU-Collision-Cracker/blob/master/images/end1.png)
-
+## Featured on:
+[Kitploit](https://www.kitploit.com/2018/01/descrypt-cpu-collision-cracker-descrypt.html)
 ## Citations
 [1] - http://man7.org/linux/man-pages/man3/crypt.3.html
